@@ -1,17 +1,19 @@
 <?php
-/* -------------------------------------------------------
- *
- *   LiveStreet (v0.4.2)
- *   Plugin KeyCAPTCHA (v.1.0.0)
- *   Copyright © 2011 Yelizarov Alexei aka beauty_free
- *
- * --------------------------------------------------------
- *
- *   Plugin Page: http://devall.ru
- *   Contact e-mail: felex-ae@ya.ru
- *
-  ---------------------------------------------------------
- */
+/*-------------------------------------------------------
+*
+*   LiveStreet Engine Social Networking
+*   Copyright © 2008 Mzhelskiy Maxim
+*
+*--------------------------------------------------------
+*
+*   Official site: www.livestreet.ru
+*   Contact e-mail: rus.engine@gmail.com
+*
+*   GNU General Public License, version 2:
+*   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+*
+---------------------------------------------------------
+*/
 
 class PluginMagicrule_ActionQuestion extends PluginMagicrule_Inherit_ActionQuestion {
 
