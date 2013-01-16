@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<name>
+		<lang name="default">Magic Rule</lang>
+	</name>
+	<author>
+		<lang name="default">LiveStreet Developers Team</lang>
+	</author>
+	<homepage></homepage>
+	<version>1.0</version>
+	<requires>
+		<livestreet>1.*</livestreet>
+	</requires>
+	<description>
+		<lang name="default">Specific rules for voting and add content</lang>
+		<lang name="russian">Специфические правила для голосования и добавления контента</lang>
+	</description>
+</plugin>
