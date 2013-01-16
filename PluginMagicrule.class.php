@@ -27,6 +27,11 @@ class PluginMagicrule extends Plugin {
 	protected $aInherits=array(
 		'action' => array(
 			'ActionAjax'=>'_ActionAjax',
+			'ActionBlog'=>'_ActionBlog',
+			'ActionTopic'=>'_ActionTopic',
+			'ActionQuestion'=>'_ActionQuestion',
+			'ActionLink'=>'_ActionLink',
+			'ActionPhotoset'=>'_ActionPhotoset',
 		),
 		'module' => array(
 			'ModuleVote'=>'_ModuleVote',

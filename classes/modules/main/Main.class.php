@@ -29,7 +29,13 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 			return $mRes ? $mRes : false;
 		}
 		$aGroups=(array)Config::Get('plugin.magicrule.rule.'.$sAction.'.groups');
-		$sMsg=Config::Get('plugin.magicrule.rule.'.$sAction.'.msg');
+		if (!count($aGroups)) {
+			return true;
+		}
+		$sMsg=(string)Config::Get('plugin.magicrule.rule.'.$sAction.'.msg');
+		if ('NOT_FOUND_LANG_TEXT'!=$sMsgLang=$this->Lang_Get($sMsg)) {
+			$sMsg=$sMsgLang;
+		}
 		foreach($aGroups as $aRule) {
 			$bCheck=true;
 			foreach($aRule as $sParam=>$mValue) {
@@ -46,7 +52,7 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 	}
 
 	public function GetTypeAndTargetByAction($sAction) {
-		$aPath=explode('_',$sAction);
+		$aPath=explode('_',strtolower($sAction));
 		if (isset($aPath[0]) and isset($aPath[1])) {
 			$iBlockType=null;
 			if ($aPath[0]=='vote') {
@@ -139,7 +145,13 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 				$oBlock->setType(self::BLOCK_TYPE_VOTE);
 				$oBlock->setName(isset($aRule['name']) ? $aRule['name'] : '');
 				$oBlock->setTarget($sTarget);
-				$oBlock->setMsg(isset($aRule['block_msg']) ? $aRule['block_msg'] : '');
+				if (isset($aRule['block_msg'])) {
+					$sMsg=$aRule['block_msg'];
+					if ('NOT_FOUND_LANG_TEXT'!=$sMsgLang=$this->Lang_Get($sMsg)) {
+						$sMsg=$sMsgLang;
+					}
+					$oBlock->setMsg($sMsg);
+				}
 				$oBlock->setDateBlock(date('Y-m-d H:i:s',time()+$aRule['block_time']));
 				$oBlock->Add();
 			}
