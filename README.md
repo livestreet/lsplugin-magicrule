@@ -1,0 +1,2 @@
+lsplugin-magicrule
+==================
