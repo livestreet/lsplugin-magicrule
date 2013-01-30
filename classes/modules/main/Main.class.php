@@ -118,6 +118,34 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 				return false;
 			}
 		}
+		if ($sParam=='rating_sum_topic') {
+			if (is_array($mValue) and count($mValue)>1) {
+				$iRating=$mValue[0];
+				$iTime=$mValue[1];
+			} else {
+				$iRating=$mValue;
+				$iTime=60*60*24*14;
+			}
+			if ($this->GetSumRatingTopic($oUser->getId(),date("Y-m-d H:i:s",time()-$iTime)) >= $iRating) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		if ($sParam=='rating_sum_comment') {
+			if (is_array($mValue) and count($mValue)>1) {
+				$iRating=$mValue[0];
+				$iTime=$mValue[1];
+			} else {
+				$iRating=$mValue;
+				$iTime=60*60*24*7;
+			}
+			if ($this->GetSumRatingComment($oUser->getId(),date("Y-m-d H:i:s",time()-$iTime)) >= $iRating) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 		return false;
 	}
 
@@ -137,6 +165,12 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 			if (!in_array($sType,$aRule['type'])) {
 				continue;
 			}
+			if (isset($aRule['rating'])) {
+				if ($oUser->getRating()>=$aRule['rating']) {
+					continue;
+				}
+			}
+
 			$sDate=date('Y-m-d H:i:s',time()-$aRule['period']);
 			$iCount=$this->GetCountVote($oUser->getId(),$sTarget,$sDate);
 			if ($iCount>=$aRule['count']) {
@@ -160,5 +194,13 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 
 	public function GetCountVote($iUserId,$sTargetType,$sDate) {
 		return $this->oMapper->GetCountVote($iUserId,$sTargetType,$sDate);
+	}
+
+	public function GetSumRatingTopic($iUserId,$sDate=null) {
+		return $this->oMapper->GetSumRatingTopic($iUserId,$sDate);
+	}
+
+	public function GetSumRatingComment($iUserId,$sDate=null) {
+		return $this->oMapper->GetSumRatingComment($iUserId,$sDate);
 	}
 }
