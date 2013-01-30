@@ -188,6 +188,7 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 				}
 				$oBlock->setDateBlock(date('Y-m-d H:i:s',time()+$aRule['block_time']));
 				$oBlock->Add();
+				break; // Прекращаем обход правил
 			}
 		}
 	}
