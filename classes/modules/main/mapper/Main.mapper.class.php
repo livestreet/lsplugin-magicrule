@@ -61,7 +61,7 @@ class PluginMagicrule_ModuleMain_MapperMain extends Mapper {
 				comment_delete = 0
 				{ AND comment_date >= ? }
 		";
-		if ($aRow=$this->oDb->selectRow($sql,$iUserId,$sDate ? $sDate : DBSIMPLE_SKIP)) {var_dump($aRow);
+		if ($aRow=$this->oDb->selectRow($sql,$iUserId,$sDate ? $sDate : DBSIMPLE_SKIP)) {
 			return $aRow['s'] ? $aRow['s'] : 0;
 		}
 		return 0;
