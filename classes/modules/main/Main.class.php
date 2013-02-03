@@ -30,10 +30,45 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 		if ($oUser->isAdministrator()) {
 			return true;
 		}
+		/**
+		 * Проверка на наличие блокировок
+		 */
 		list($iBlockType,$sBlockTarget)=$this->GetTypeAndTargetByAction($sAction);
 		if (true!==$mRes=$this->CheckRuleBlock($iBlockType,$sBlockTarget,$oUser,$aParams)) {
 			return $mRes ? $mRes : false;
 		}
+
+		/**
+		 * Проверка на запрещающие правила
+		 */
+		$sMsg=(string)Config::Get('plugin.magicrule.rule_disallow.'.$sAction.'.msg');
+		if ('NOT_FOUND_LANG_TEXT'!=$sMsgLang=$this->Lang_Get($sMsg)) {
+			$sMsg=$sMsgLang;
+		}
+		$bSkip=false;
+		$aType=(array)Config::Get('plugin.magicrule.rule_disallow.'.$sAction.'.type');
+		if ($iBlockType==self::BLOCK_TYPE_VOTE and isset($aParams['vote_value']) and count($aType) and !in_array($this->aVoteMirrow[$aParams['vote_value']],$aType)) {
+			$bSkip=true;
+		}
+		$aGroups=(array)Config::Get('plugin.magicrule.rule_disallow.'.$sAction.'.groups');
+		if (!$bSkip and count($aGroups)) {
+			foreach($aGroups as $aRule) {
+				$bCheck=true;
+				foreach($aRule as $sParam=>$mValue) {
+					if (!$this->CheckRuleDisallowActionParam($sParam,$mValue,$oUser,$aParams)) {
+						$bCheck=false;
+						break;
+					}
+				}
+				if ($bCheck) {
+					return $sMsg ? $sMsg : false;
+				}
+			}
+		}
+
+		/**
+		 * Проверка на разрешающие правила
+		 */
 		$aGroups=(array)Config::Get('plugin.magicrule.rule.'.$sAction.'.groups');
 		if (!count($aGroups)) {
 			return true;
@@ -163,6 +198,20 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 				$iTime=60*60*24*7;
 			}
 			if ($this->GetSumRatingComment($oUser->getId(),date("Y-m-d H:i:s",time()-$iTime)) >= $iRating) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public function CheckRuleDisallowActionParam($sParam,$mValue,$oUser,$aParams=array()) {
+		if ($sParam=='user_id') {
+			if (!is_array($mValue)) {
+				$mValue=array($mValue);
+			}
+			if (in_array($oUser->getId(),$mValue)) {
 				return true;
 			} else {
 				return false;
