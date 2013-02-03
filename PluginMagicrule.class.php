@@ -47,6 +47,13 @@ class PluginMagicrule extends Plugin {
 			 * При активации выполняем SQL дамп
 			 */
 			$this->ExportSQL(dirname(__FILE__).'/dump.sql');
+		} else {
+			/**
+			 * Таблица уже есть, но возможно требуется обновление
+			 */
+			if (!$this->isFieldExists('prefix_magicrule_block','data')) {
+				$this->ExportSQL(dirname(__FILE__).'/patch_1.0_to_1.1.sql');
+			}
 		}
 		return true;
 	}

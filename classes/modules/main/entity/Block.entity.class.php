@@ -27,5 +27,26 @@ class PluginMagicrule_ModuleMain_EntityBlock extends EntityORM {
 		}
 		return true;
 	}
+
+	public function setData($aData) {
+		$this->_aData['data']=serialize($aData);
+	}
+
+	public function getData($sKey=null) {
+		$aData=$this->_getDataOne('data');
+		$aReturn=@unserialize($aData);
+		if (is_null($sKey)) {
+			if ($aReturn) {
+				return $aReturn;
+			}
+			return array();
+		} else {
+			if ($aReturn and array_key_exists($sKey,$aReturn)) {
+				return $aReturn[$sKey];
+			} else {
+				return null;
+			}
+		}
+	}
 }
 ?>

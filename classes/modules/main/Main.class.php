@@ -6,6 +6,12 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 	const BLOCK_TYPE_CREATE=2;
 
 	/**
+	 * Список направлений голосований и их синонимы
+	 *
+	 * @var array
+	 */
+	protected $aVoteMirrow=array(1=>'up',-1=>'down',0=>'abstain');
+	/**
 	 * Объект маппера
 	 *
 	 */
@@ -25,7 +31,7 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 			return true;
 		}
 		list($iBlockType,$sBlockTarget)=$this->GetTypeAndTargetByAction($sAction);
-		if (true!==$mRes=$this->CheckRuleBlock($iBlockType,$sBlockTarget,$oUser)) {
+		if (true!==$mRes=$this->CheckRuleBlock($iBlockType,$sBlockTarget,$oUser,$aParams)) {
 			return $mRes ? $mRes : false;
 		}
 		$aGroups=(array)Config::Get('plugin.magicrule.rule.'.$sAction.'.groups');
@@ -65,14 +71,30 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 		return array(null,null);
 	}
 
-	public function CheckRuleBlock($iType,$sTarget,$oUser) {
-		$oBlock=$this->GetBlockByFilter(array(
+	public function CheckRuleBlock($iType,$sTarget,$oUser,$aParams=array()) {
+		$aBlockItems=$this->GetBlockItemsByFilter(array(
 			'user_id' => $oUser->getId(),
 			'type' => $iType,
 			'target' => $sTarget,
 			'date_block >=' => date("Y-m-d H:i:s"),
 										));
-		if ($oBlock) {
+		/**
+		 * Проверяем все действующие блокировки
+		 */
+		foreach($aBlockItems as $oBlock) {
+			/**
+			 * Проверяем на направление голосования
+			 */
+			if ($iType==self::BLOCK_TYPE_VOTE) {
+				if (isset($aParams['vote_value']) and $aDirection=$oBlock->getData('direction')) {
+					/**
+					 * Если нужного направления голосования нет в списке, то пропускаем блокировку
+					 */
+					if (!in_array($aParams['vote_value'],$aDirection)) {
+						continue;
+					}
+				}
+			}
 			if ($oBlock->getMsg()) {
 				return $oBlock->getMsg();
 			} else {
@@ -154,8 +176,7 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 			return false;
 		}
 		$sTarget=$oVote->getTargetType();
-		$aMirrow=array(1=>'up',-1=>'down',0=>'abstain');
-		$sType=$aMirrow[$oVote->getDirection()];
+		$sType=$this->aVoteMirrow[$oVote->getDirection()];
 
 		$aGroups=(array)Config::Get('plugin.magicrule.block_rule_vote');
 		foreach($aGroups as $aRule) {
@@ -187,8 +208,14 @@ class PluginMagicrule_ModuleMain extends ModuleORM {
 					$oBlock->setMsg($sMsg);
 				}
 				$oBlock->setDateBlock(date('Y-m-d H:i:s',time()+$aRule['block_time']));
+				$oBlock->setData(array('direction'=>array_values(array_intersect_key(array_flip($this->aVoteMirrow),array_flip($aRule['type'])))));
 				$oBlock->Add();
-				break; // Прекращаем обход правил
+				/**
+				 * Прекращаем обход правил
+				 */
+				if (!Config::Get('plugin.magicrule.processing_block_rule_all')) {
+					break;
+				}
 			}
 		}
 	}
