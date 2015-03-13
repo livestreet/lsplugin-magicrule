@@ -17,7 +17,7 @@
 
 class PluginMagicrule_ModuleVote extends PluginMagicrule_Inherit_ModuleVote {
 
-	public function AddVote($oVote) {
+	public function AddVote(ModuleVote_EntityVote $oVote) {
 		$bResult=parent::AddVote($oVote);
 		if ($bResult) {
 			$this->PluginMagicrule_Main_CheckForCreateBlockVote($oVote);
