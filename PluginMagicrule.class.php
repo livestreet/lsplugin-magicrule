@@ -32,6 +32,7 @@ class PluginMagicrule extends Plugin {
 			'ActionQuestion'=>'_ActionQuestion',
 			'ActionLink'=>'_ActionLink',
 			'ActionPhotoset'=>'_ActionPhotoset',
+			'ActionProfile'=>'_ActionProfile',
 		),
 		'module' => array(
 			'ModuleVote'=>'_ModuleVote',
